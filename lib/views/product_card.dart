@@ -27,7 +27,7 @@ class ProductCard extends StatelessWidget {
         child: Stack(
           children: [
             Card(
-              color: const Color(0xFFF5ECE3),
+              color: const Color.fromARGB(255, 249, 223, 195),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),

@@ -12,16 +12,14 @@ class ProductListScreen extends StatelessWidget {
     final products = viewModel.getProducts();
 
     return Scaffold(
-      backgroundColor: Color.fromRGBO(208, 170, 136, 1),
+      backgroundColor: const Color(0xFFF8F0E3),
 
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(208, 170, 136, 1),
-
-        title: const Text('سكرا', style: TextStyle(color: Colors.white)),
-        centerTitle: true,
+        backgroundColor: const Color.fromRGBO(208, 170, 136, 1),
         elevation: 0,
-        flexibleSpace: Container(),
+        centerTitle: true,
+        title: Image.asset('assets/images/sokra.png', height: 210),
       ),
       body: GridView.builder(
         padding: const EdgeInsets.only(
