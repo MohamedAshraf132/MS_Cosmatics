@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/product.dart';
+import '../models/cart_model.dart';
 import 'product_details_screen.dart';
 
 class ProductCard extends StatelessWidget {
@@ -45,7 +47,7 @@ class ProductCard extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
 
                   // البيانات
                   Padding(
@@ -93,10 +95,181 @@ class ProductCard extends StatelessWidget {
                           height: 40,
                           child: OutlinedButton(
                             onPressed: () {
-                              // TODO: add to cart
+                              int quantity = 1;
+
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return Dialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    backgroundColor: const Color(0xFFFDF6F0),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Text(
+                                            'Select Quantity',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color(0xFF5E4033),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 20),
+
+                                          // عداد الكمية
+                                          StatefulBuilder(
+                                            builder: (context, setState) {
+                                              return Container(
+                                                decoration: BoxDecoration(
+                                                  color: const Color(
+                                                    0xFFF5ECE3,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  border: Border.all(
+                                                    color: Color(0xFFD0AA88),
+                                                  ),
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 8,
+                                                    ),
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    IconButton(
+                                                      icon: const Icon(
+                                                        Icons.remove,
+                                                        color: Color(
+                                                          0xFF5E4033,
+                                                        ),
+                                                      ),
+                                                      onPressed: () {
+                                                        if (quantity > 1) {
+                                                          setState(
+                                                            () => quantity--,
+                                                          );
+                                                        }
+                                                      },
+                                                    ),
+                                                    Text(
+                                                      quantity.toString(),
+                                                      style: const TextStyle(
+                                                        fontSize: 22,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    IconButton(
+                                                      icon: const Icon(
+                                                        Icons.add,
+                                                        color: Color(
+                                                          0xFF5E4033,
+                                                        ),
+                                                      ),
+                                                      onPressed: () {
+                                                        setState(
+                                                          () => quantity++,
+                                                        );
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          ),
+
+                                          const SizedBox(height: 24),
+
+                                          // الأزرار
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.of(context).pop(),
+                                                child: const Text(
+                                                  'Cancel',
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Provider.of<CartModel>(
+                                                    context,
+                                                    listen: false,
+                                                  ).addToCart(
+                                                    product,
+                                                    quantity,
+                                                  );
+
+                                                  Navigator.of(context).pop();
+
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        '${product.name} added to cart (x$quantity)',
+                                                      ),
+                                                      duration: const Duration(
+                                                        seconds: 2,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: const Color(
+                                                    0xFFD0AA88,
+                                                  ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          16,
+                                                        ),
+                                                  ),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 20,
+                                                        vertical: 12,
+                                                      ),
+                                                ),
+                                                child: const Text(
+                                                  'Add to Cart',
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
                             },
                             style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Colors.teal),
+                              backgroundColor: const Color.fromRGBO(
+                                208,
+                                170,
+                                136,
+                                1,
+                              ),
+                              side: const BorderSide(
+                                color: Color.fromRGBO(208, 170, 136, 1),
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
@@ -105,8 +278,8 @@ class ProductCard extends StatelessWidget {
                             child: const Text(
                               'Add to cart',
                               style: TextStyle(
-                                color: Colors.teal,
-                                fontSize: 12,
+                                color: Colors.white,
+                                fontSize: 14,
                               ),
                             ),
                           ),

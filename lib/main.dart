@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         primaryTextTheme: GoogleFonts.cairoTextTheme(),
 
         // لون خلفية كل Scaffold
-        scaffoldBackgroundColor: const Color.fromRGBO(208, 170, 136, 1),
+        scaffoldBackgroundColor: const Color(0xFFF8F0E3),
 
         // تثبيت شكل الـ AppBar عالميًا
         appBarTheme: AppBarTheme(

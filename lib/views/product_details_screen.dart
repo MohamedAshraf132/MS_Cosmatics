@@ -4,17 +4,38 @@ import '../models/product.dart';
 import '../models/cart_model.dart';
 import 'checkout_screen.dart';
 
-class ProductDetailsScreen extends StatelessWidget {
+class ProductDetailsScreen extends StatefulWidget {
   final Product product;
 
   const ProductDetailsScreen({super.key, required this.product});
 
   @override
+  State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
+}
+
+class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
+  int quantity = 1;
+
+  void increaseQuantity() {
+    setState(() {
+      quantity++;
+    });
+  }
+
+  void decreaseQuantity() {
+    if (quantity > 1) {
+      setState(() {
+        quantity--;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    double discount = 100 - ((product.price / product.oldPrice) * 100);
+    final product = widget.product;
 
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(208, 170, 136, 1),
+      backgroundColor: const Color(0xFFF8F0E3),
       appBar: AppBar(
         title: Text(product.name, style: const TextStyle(color: Colors.white)),
         backgroundColor: const Color.fromRGBO(208, 170, 136, 1),
@@ -27,7 +48,6 @@ class ProductDetailsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // صورة المنتج
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.asset(
@@ -38,32 +58,28 @@ class ProductDetailsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 30),
-
-              // اسم المنتج
               Text(
                 product.name,
                 style: const TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 40),
-
-              // بطاقة السعر بالتفصيل
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 227, 212, 212),
+                  color: const Color.fromRGBO(208, 170, 136, 1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'PRICE',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                      style: TextStyle(fontSize: 12, color: Colors.black),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -71,7 +87,7 @@ class ProductDetailsScreen extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 14,
                         decoration: TextDecoration.lineThrough,
-                        color: Colors.grey,
+                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -85,40 +101,37 @@ class ProductDetailsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'you save LE ${(product.oldPrice - product.price).toStringAsFixed(0)}',
-                      style: const TextStyle(fontSize: 14, color: Colors.teal),
+                      'You save LE ${(product.oldPrice - product.price).toStringAsFixed(0)}',
+                      style: const TextStyle(fontSize: 14, color: Colors.white),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 16),
-
-              // عداد الكمية وزر الإضافة للسلة
               Row(
                 children: [
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: const Color.fromARGB(255, 227, 212, 212),
+                        color: const Color.fromRGBO(208, 170, 136, 1),
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
                       children: [
                         IconButton(
-                          onPressed: () {
-                            // هنا يمكننا تنفيذ وظيفة تخفيض الكمية
-                          },
+                          onPressed: decreaseQuantity,
                           icon: const Icon(Icons.remove, color: Colors.black),
                         ),
-                        const Text(
-                          '1',
-                          style: TextStyle(fontSize: 16, color: Colors.black),
+                        Text(
+                          '$quantity',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
                         ),
                         IconButton(
-                          onPressed: () {
-                            // هنا يمكننا تنفيذ وظيفة زيادة الكمية
-                          },
+                          onPressed: increaseQuantity,
                           icon: const Icon(Icons.add, color: Colors.black),
                         ),
                       ],
@@ -131,7 +144,8 @@ class ProductDetailsScreen extends StatelessWidget {
                         Provider.of<CartModel>(
                           context,
                           listen: false,
-                        ).addToCart(product);
+                        ).addToCart(product, quantity);
+
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('${product.name} added to cart'),
@@ -139,17 +153,18 @@ class ProductDetailsScreen extends StatelessWidget {
                         );
                       },
                       style: OutlinedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(208, 170, 136, 1),
                         side: const BorderSide(
                           color: Color.fromARGB(255, 227, 212, 212),
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         padding: EdgeInsets.zero,
                       ),
                       child: const Text(
                         'Add to cart',
-                        style: TextStyle(color: Colors.black, fontSize: 12),
+                        style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
                     ),
                   ),
@@ -158,72 +173,74 @@ class ProductDetailsScreen extends StatelessWidget {
               const SizedBox(height: 16),
               OutlinedButton(
                 onPressed: () {
-                  Provider.of<CartModel>(
-                    context,
-                    listen: false,
-                  ).addToCart(product);
+                  final cart = Provider.of<CartModel>(context, listen: false);
+
+                  // لو المنتج مش موجود في السلة، ضيفه
+                  if (!cart.items.any(
+                    (item) => item.product.id == product.id,
+                  )) {
+                    cart.addToCart(product, quantity);
+                  }
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const CheckoutScreen()),
                   );
                 },
                 style: OutlinedButton.styleFrom(
+                  backgroundColor: const Color.fromRGBO(208, 170, 136, 1),
                   minimumSize: const Size(double.infinity, 48),
                   side: const BorderSide(
                     color: Color.fromARGB(255, 227, 212, 212),
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   padding: EdgeInsets.zero,
                 ),
                 child: const Text(
                   'BUY IT NOW',
-                  style: TextStyle(color: Colors.black, fontSize: 12),
+                  style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ),
               const SizedBox(height: 24),
-
-              // التفاصيل
               const Text(
                 'Description:',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
               ),
               Text(
                 product.description,
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.black),
               ),
               const SizedBox(height: 12),
-
               const Text(
                 'Benefits:',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
               ),
               Text(
                 product.benefits,
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.black),
               ),
               const SizedBox(height: 12),
-
               const Text(
                 'How to Use:',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
               ),
               Text(
                 product.howToUse,
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.black),
               ),
             ],
           ),

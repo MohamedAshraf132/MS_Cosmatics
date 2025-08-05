@@ -4,6 +4,7 @@ import 'product.dart';
 class CartItem {
   final Product product;
   int quantity;
+
   CartItem({required this.product, this.quantity = 1});
 }
 
@@ -12,12 +13,12 @@ class CartModel extends ChangeNotifier {
 
   List<CartItem> get items => _items;
 
-  void addToCart(Product product) {
+  void addToCart(Product product, [int quantity = 1]) {
     final index = _items.indexWhere((item) => item.product.id == product.id);
-    if (index != -1) {
-      _items[index].quantity++;
+    if (index >= 0) {
+      _items[index].quantity = quantity; // ← تحديث الكمية بدل إضافتها
     } else {
-      _items.add(CartItem(product: product));
+      _items.add(CartItem(product: product, quantity: quantity));
     }
     notifyListeners();
   }
