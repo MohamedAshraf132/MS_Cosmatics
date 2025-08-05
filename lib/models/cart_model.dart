@@ -16,7 +16,7 @@ class CartModel extends ChangeNotifier {
   void addToCart(Product product, [int quantity = 1]) {
     final index = _items.indexWhere((item) => item.product.id == product.id);
     if (index >= 0) {
-      _items[index].quantity = quantity; // ← تحديث الكمية بدل إضافتها
+      _items[index].quantity = quantity;
     } else {
       _items.add(CartItem(product: product, quantity: quantity));
     }
@@ -48,4 +48,28 @@ class CartModel extends ChangeNotifier {
 
   double get totalPrice =>
       _items.fold(0.0, (sum, item) => sum + item.product.price * item.quantity);
+
+  // ✅ الدوال الجديدة المطلوبة لواجهة المستخدم
+  int getQuantity(Product product) {
+    final index = _items.indexWhere((item) => item.product.id == product.id);
+    return index != -1 ? _items[index].quantity : 0;
+  }
+
+  void increaseQuantity(Product product) {
+    final index = _items.indexWhere((item) => item.product.id == product.id);
+    if (index != -1) {
+      _items[index].quantity++;
+      notifyListeners();
+    }
+  }
+
+  void decreaseQuantity(Product product) {
+    final index = _items.indexWhere((item) => item.product.id == product.id);
+    if (index != -1 && _items[index].quantity > 1) {
+      _items[index].quantity--;
+    } else if (index != -1) {
+      _items.removeAt(index);
+    }
+    notifyListeners();
+  }
 }

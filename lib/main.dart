@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ms_cosmatics/models/cart_model.dart';
+import 'package:ms_cosmatics/views/cart_screen.dart';
+import 'package:ms_cosmatics/views/checkout_screen.dart';
 import 'package:provider/provider.dart';
 import 'views/product_list_screen.dart';
 
@@ -19,6 +21,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes: {
+        '/cart': (context) => const CartScreen(),
+        '/checkout': (context) => const CheckoutScreen(),
+      },
       title: 'MS Cosmetics',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
